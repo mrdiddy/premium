@@ -3,186 +3,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AREWESTILLFRIENDS??</title>
-    <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-
-    <header>
-        <h1 id="nowPlaying">hello</h1>
-    </header>
-
-    <main>
-        <section class="playlist">
-            <h2>Created... by... ultraskibidiradiation</h2>
-            <div id="trackList"></div>
-            <div class="controls">
-                <button id="playAllButton">Play</button>
-                <button id="skipButton">Next (Song)</button>
-                <button id="rewindButton">Last (Song)</button>
-                <label for="volumeControl">Volume:</label>
-                <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="0.5">
-            </div>
-            <div id="progressContainer">
-                <input type="range" id="progressBar" value="0" step="1" min="0">
-                <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
-            </div>
-            <div id="customization">
-                <h3>Customize Artist and Album Art</h3>
-                <label for="artistInput">Artist:</label>
-                <input type="text" id="artistInput" placeholder="Shian Adriel">
-                <label for="albumArtInput">Album Art URL:</label>
-                <input type="text" id="albumArtInput" placeholder="Default album art URL">
-                <button id="applyCustomization">Apply</button>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 10100x020032130912x010101010101</p>
-    </footer>
-
-    <audio id="audioPlayer" controls preload="auto"></audio>
-
-    <script>
-        const audioPlayer = document.getElementById('audioPlayer');
-        const trackListElement = document.getElementById('trackList');
-        const progressBar = document.getElementById('progressBar');
-        const currentTimeDisplay = document.getElementById('currentTime');
-        const durationDisplay = document.getElementById('duration');
-        const nowPlaying = document.getElementById('nowPlaying');
-        const artistInput = document.getElementById('artistInput');
-        const albumArtInput = document.getElementById('albumArtInput');
-        const applyCustomization = document.getElementById('applyCustomization');
-        const volumeControl = document.getElementById('volumeControl');
-
-        const trackList = [
-            { file: 'DieWithASmile.mp3', displayName: 'Die With A Smile' },
-            { file: 'Lover.mp3', displayName: 'Lover' },
-            { file: 'Cardigan.mp3', displayName: 'Cardigan' },
-            { file: 'CruelSummer.mp3', displayName: 'Cruel Summer' },
-            { file: 'BIRDSOFAFEATHER.mp3', displayName: 'Birds of a Feather' },
-            { file: 'SailorSong.mp3', displayName: 'Sailor Song' },
-            { file: 'her.mp3', displayName: 'Sailo- I mean her!' },
-            { file: 'GlueSong.mp3', displayName: 'Glue Song' },
-            { file: 'CryingSeason.mp3', displayName: 'Crying Season' },
-            { file: 'MoonlitFloor.mp3', displayName: 'Moonlit Floor' },
-            { file: 'bloodline.mp3', displayName: 'bloodline' },
-            { file: 'RealMan.mp3', displayName: 'Real Man' },
-            { file: 'TakeMeHome.mp3', displayName: 'Take Me Home' },
-            { file: 'Nonsense.mp3', displayName: 'Nonsense' },
-            { file: 'Espresso.mp3', displayName: 'Espresso' },
-            { file: 'BedChem.mp3', displayName: 'Bed Chem' },
-            { file: 'PleasePleasePlease.mp3', displayName: 'Please, Please, Please' },
-            { file: 'AREWESTILLFRIENDS.mp3', displayName: 'ARE WE STILL FRIENDS?' },
-            { file: 'AgainAndAgain.mp3', displayName: 'Again and Again' },
-            { file: 'SeeYouAgain.mp3', displayName: 'See You Again' },
-            { file: 'NoticedILaughed.mp3', displayName: 'Noticed I Laughed' },
-            { file: 'Everyday.mp3', displayName: 'Everyday' },
-            { file: 'APT.mp3', displayName: 'APT' },
-            // ALBUM #1 - Bury Me At Makeout Creek
-            { file: 'CarryMeOut.mp3', displayName: 'Carry Me Out' },
-            { file: 'DrunkWalkHome.mp3', displayName: 'Drunk Walk Home' },
-            { file: 'FrancisForever.mp3', displayName: 'Francis Forever' },
-            { file: 'IDontSmoke.mp3', displayName: "I Don't Smoke" },
-            { file: 'IWill.mp3', displayName: 'I Will' },
-            { file: 'JoblessMonday.mp3', displayName: 'Jobless Monday' },
-            { file: 'LastWordsofaShootingStar.mp3', displayName: 'Last Words of a Shooting Star' },
-            { file: 'LateSpring.mp3', displayName: 'Late Spring' },
-            { file: 'TexasReznikoff.mp3', displayName: 'Texas Reznikoff' },
-            { file: 'Townie.mp3', displayName: 'Townie' },
-            // END OF ALBUM #1  
-            { file: 'theboyismine.mp3', displayName: 'The Boy is Mine' },
-            { file: 'YouBelongWithMe.mp3', displayName: 'You Belong With Me' },
-            { file: 'ANightToRemember.mp3', displayName: 'A Night to Remember' },
-            { file: 'YoureHereThatsTheThing.mp3', displayName: 'You’re Here, That’s The Thing' },
-            { file: 'theperfectpair.mp3', displayName: 'The Perfect Pair' }
-        ];
-
-        let currentTrackIndex = 0;
-        let customArtist = "Shian Adriel U.";
-        let customAlbumArt = "https://scontent.fmnl9-2.fna.fbcdn.net/v/t39.30808-6/330339196_111254765249957_3868741153041822997_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=cc71e4&_nc_eui2=AeFbjqi5w7IuTZuOFgH3L2q3VGkziLzD3WlUaTOIvMPdaXnuXT_H5go13VGmeBV8buIphrdDnQyKG3QVcQKUgK6H&_nc_ohc=0IsG-Z3FhxYQ7kNvgHhkblR&_nc_zt=23&_nc_ht=scontent.fmnl9-2.fna&_nc_gid=AKYbxxbRBGzsfleBCzM4LSo&oh=00_AYCyA1kT_yUxo2JCKiwRLUpUOPHgX9C-FtmBIAgKe0w6nA&oe=67274748";  // Default album art URL
-
-        function createTrackElements() {
-            trackList.forEach(song => {
-                const trackDiv = document.createElement('div'); 
-                trackDiv.classList.add('track');
-                trackDiv.innerHTML = `<span class="track-name">${song.displayName}</span>`;
-                trackListElement.appendChild(trackDiv);
-            });
+    <title>My Playlist</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            user-select: none;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+        #trackList {
+            list-style: none;
+            padding: 0;
+            margin: 20px auto;
+            width: 80%;
+        }
+        #trackList li {
+            padding: 15px;
+            background: #1e1e1e;
+            margin: 5px 0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        #trackList li:hover {
+            background: #61dafb;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        .control-button {
+            background-color: #444;
+            border: none;
+            border-radius: 50%;
+            color: #ffffff;
+            padding: 15px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background 0.3s, transform 0.3s;
+            width: 60px;
+            height: 60px;
+        }
+        .control-button:hover {
+            background-color: #61dafb;
+            transform: scale(1.1);
+        }
+        .control-button:active {
+            transform: scale(0.95);
+        }
+        .progress-container {
+            width: 80%;
+            margin: 10px auto;
+            background: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .progress {
+            height: 10px;
+            background: #61dafb;
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.1s, height 0.2s;
+        }
+        .progress-container:hover {
+            background: #444;
+        }
+        .progress-container:hover .progress {
+            height: 12px;
+        }
+        .time {
+            font-size: 14px;
+            margin-top: 5px;
         }
 
-        function updateProgressBar() {
-            const { currentTime, duration } = audioPlayer;
-            progressBar.max = duration || 0;
-            progressBar.value = currentTime;
-            currentTimeDisplay.textContent = formatTime(currentTime);
-            durationDisplay.textContent = formatTime(duration);
-            nowPlaying.textContent = trackList[currentTrackIndex].displayName;
+        body::-webkit-scrollbar {
+            display: none;
+        }
 
-            if ('mediaSession' in navigator) {
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: trackList[currentTrackIndex].displayName,
-                    artist: customArtist,
-                    album: '10100x020032130912x010101010101',
-                    artwork: [{ src: customAlbumArt, sizes: '512x512', type: 'image/png' }]
-                });
+        * {
+            transition: all 0.1s ease;
+        }
+    </style>
+</head>
+<body>
+    <h1>My Playlist</h1>
+    <div class="controls">
+        <button id="skipBackButton" class="control-button">⏮️</button>
+        <button id="togglePlayButton" class="control-button">▶️</button>
+        <button id="skipForwardButton" class="control-button">⏭️</button>
+    </div>
+    <div class="progress-container" id="progressContainer">
+        <div class="progress" id="progress"></div>
+    </div>
+    <div class="time">
+        <span id="currentTime">0:00</span> / <span id="durationTime">0:00</span>
+    </div>
+    <h3>Track List</h3>
+    <ul id="trackList"></ul>
+
+    <script>
+        const audioPlayer = new Audio();
+        const trackListElement = document.getElementById('trackList');
+        const togglePlayButton = document.getElementById('togglePlayButton');
+        const skipBackButton = document.getElementById('skipBackButton');
+        const skipForwardButton = document.getElementById('skipForwardButton');
+        const progress = document.getElementById('progress');
+        const currentTime = document.getElementById('currentTime');
+        const durationTime = document.getElementById('durationTime');
+        const progressContainer = document.getElementById('progressContainer');
+
+        const trackList = [
+            { file: 'DieWithASmile.mp3', displayName: 'Die With A Smile', duration: 200 },
+            { file: 'Lover.mp3', displayName: 'Lover', duration: 240 },
+            { file: 'Cardigan.mp3', displayName: 'Cardigan', duration: 200 },
+            { file: 'CruelSummer.mp3', displayName: 'Cruel Summer', duration: 215 },
+            { file: 'BIRDSOFAFEATHER.mp3', displayName: 'Birds of a Feather', duration: 180 },
+            { file: 'SailorSong.mp3', displayName: 'Sailor Song', duration: 190 },
+            { file: 'her.mp3', displayName: 'Sailo- I mean her!', duration: 210 },
+            { file: 'GlueSong.mp3', displayName: 'Glue Song', duration: 220 },
+            { file: 'CryingSeason.mp3', displayName: 'Crying Season', duration: 230 },
+            { file: 'MoonlitFloor.mp3', displayName: 'Moonlit Floor', duration: 240 },
+            { file: 'bloodline.mp3', displayName: 'bloodline', duration: 250 },
+            { file: 'RealMan.mp3', displayName: 'Real Man', duration: 260 },
+            { file: 'TakeMeHome.mp3', displayName: 'Take Me Home', duration: 270 },
+            { file: 'Nonsense.mp3', displayName: 'Nonsense', duration: 280 },
+            { file: 'Espresso.mp3', displayName: 'Espresso', duration: 290 },
+            { file: 'BedChem.mp3', displayName: 'Bed Chem', duration: 300 },
+            { file: 'PleasePleasePlease.mp3', displayName: 'Please, Please, Please', duration: 310 },
+            { file: 'AREWESTILLFRIENDS.mp3', displayName: 'ARE WE STILL FRIENDS?', duration: 320 },
+            { file: 'AgainAndAgain.mp3', displayName: 'Again and Again', duration: 330 },
+            { file: 'SeeYouAgain.mp3', displayName: 'See You Again', duration: 340 },
+            { file: 'NoticedILaughed.mp3', displayName: 'Noticed I Laughed', duration: 350 },
+            { file: 'Everyday.mp3', displayName: 'Everyday', duration: 360 },
+            { file: 'APT.mp3', displayName: 'APT', duration: 370 },
+            { file: 'CarryMeOut.mp3', displayName: 'Carry Me Out', duration: 380 },
+            { file: 'DrunkWalkHome.mp3', displayName: 'Drunk Walk Home', duration: 390 },
+            { file: 'FrancisForever.mp3', displayName: 'Francis Forever', duration: 400 },
+            { file: 'IDontSmoke.mp3', displayName: "I Don't Smoke", duration: 410 },
+            { file: 'IWill.mp3', displayName: 'I Will', duration: 420 },
+            { file: 'JoblessMonday.mp3', displayName: 'Jobless Monday', duration: 430 },
+            { file: 'LastWordsofaShootingStar.mp3', displayName: 'Last Words of a Shooting Star', duration: 440 },
+            { file: 'LateSpring.mp3', displayName: 'Late Spring', duration: 450 },
+            { file: 'TexasReznikoff.mp3', displayName: 'Texas Reznikoff', duration: 460 },
+            { file: 'Townie.mp3', displayName: 'Townie', duration: 470 },
+            { file: 'theboyismine.mp3', displayName: 'The Boy is Mine', duration: 480 },
+            { file: 'YouBelongWithMe.mp3', displayName: 'You Belong With Me', duration: 490 },
+            { file: 'ANightToRemember.mp3', displayName: 'A Night to Remember', duration: 500 },
+            { file: 'YoureHereThatsTheThing.mp3', displayName: 'You’re Here, That’s The Thing', duration: 510 },
+            { file: 'theperfectpair.mp3', displayName: 'The Perfect Pair', duration: 520 }
+        ];
+
+        let currentlyPlayingIndex = -1;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('h1').textContent = 'My Playlist';
+        });
+
+        function playTrack(index) {
+            currentlyPlayingIndex = index;
+            const filePath = `../songs/${trackList[index].file}`;
+            console.log('Attempting to play:', filePath);
+            
+            audioPlayer.src = filePath;
+            audioPlayer.play().then(() => {
+                updateControls(true);
+            }).catch(error => {
+                console.error('Error playing the audio:', error);
+            });
+
+            updateDuration();
+        }
+
+        function updateDuration() {
+            audioPlayer.onloadedmetadata = () => {
+                durationTime.textContent = formatTime(audioPlayer.duration);
+                audioPlayer.ontimeupdate = () => {
+                    currentTime.textContent = formatTime(audioPlayer.currentTime);
+                    progress.style.width = (audioPlayer.currentTime / audioPlayer.duration) * 100 + '%';
+                };
+                audioPlayer.onended = () => {
+                    nextTrack();
+                };
+            };
+        }
+
+        function nextTrack() {
+            currentlyPlayingIndex++;
+            if (currentlyPlayingIndex >= trackList.length) {
+                currentlyPlayingIndex = 0; // Loop back to the first track
             }
+            playTrack(currentlyPlayingIndex);
         }
 
         function formatTime(seconds) {
             const minutes = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
-            return `${minutes}:${secs < 10 ? '0' + secs : secs}`;
+            return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
         }
 
-        function playTrack(index) {
-            if (index < trackList.length) {
-                audioPlayer.src = `../Songs/${trackList[index].file}`;
-                audioPlayer.play()
-                    .then(() => {
-                        console.log(`Playing: ${trackList[index].displayName}`);
-                    })
-                    .catch(error => {
-                        console.error('Error playing the track:', error);
-                    });
+        togglePlayButton.addEventListener('click', () => {
+            if (currentlyPlayingIndex === -1) {
+                playTrack(0); // Start playing from the first track
+            } else if (audioPlayer.paused) {
+                audioPlayer.play();
+                updateControls(true);
+            } else {
+                audioPlayer.pause();
+                updateControls(false);
             }
+        });
+
+        skipBackButton.addEventListener('click', () => {
+            if (currentlyPlayingIndex > 0) {
+                currentlyPlayingIndex--;
+                playTrack(currentlyPlayingIndex);
+            }
+        });
+
+        skipForwardButton.addEventListener('click', () => {
+            nextTrack();
+        });
+
+        function updateControls(isPlaying) {
+            togglePlayButton.textContent = isPlaying ? '⏸️' : '▶️';
         }
 
-        function playAllTracks() {
-            playTrack(currentTrackIndex);
-            audioPlayer.addEventListener('ended', () => {
-                currentTrackIndex = (currentTrackIndex + 1) % trackList.length;
-                playTrack(currentTrackIndex);
+        trackList.forEach((track, index) => {
+            const li = document.createElement('li');
+            li.textContent = track.displayName;
+            li.addEventListener('click', () => {
+                playTrack(index);
             });
-        }
-
-        document.getElementById('playAllButton').addEventListener('click', playAllTracks);
-        document.getElementById('skipButton').addEventListener('click', () => {
-            currentTrackIndex = (currentTrackIndex + 1) % trackList.length;
-            playTrack(currentTrackIndex);
+            trackListElement.appendChild(li);
         });
-
-        document.getElementById('rewindButton').addEventListener('click', () => {
-            currentTrackIndex = (currentTrackIndex - 1 + trackList.length) % trackList.length;
-            playTrack(currentTrackIndex);
-        });
-
-        audioPlayer.addEventListener('timeupdate', updateProgressBar);
-        audioPlayer.addEventListener('loadedmetadata', updateProgressBar);
-        audioPlayer.addEventListener('ended', updateProgressBar);
-
-        applyCustomization.addEventListener('click', () => {
-            customArtist = artistInput.value || customArtist;
-            customAlbumArt = albumArtInput.value || customAlbumArt;
-            alert('Customization applied!');
-        });
-
-        volumeControl.addEventListener('input', () => {
-            audioPlayer.volume = volumeControl.value;
-        });
-
-        createTrackElements();
     </script>
 </body>
 </html>
