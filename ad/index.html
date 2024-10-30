@@ -42,7 +42,7 @@
         <p>&copy; 10100x020032130912x010101010101</p>
     </footer>
 
-    <audio id="audioPlayer" controls></audio>
+    <audio id="audioPlayer" controls preload="auto"></audio>
 
     <script>
         const audioPlayer = document.getElementById('audioPlayer');
@@ -138,45 +138,51 @@
 
         function playTrack(index) {
             if (index < trackList.length) {
-                audioPlayer.src = `../song/${trackList[index].file}`;
-                audioPlayer.play();
+                audioPlayer.src = `../Songs/${trackList[index].file}`;
+                audioPlayer.play()
+                    .then(() => {
+                        console.log(`Playing: ${trackList[index].displayName}`);
+                    })
+                    .catch(error => {
+                        console.error('Error playing the track:', error);
+                    });
             }
         }
 
-        function skipTrack() {
-            if (currentTrackIndex < trackList.length - 1) {
-                currentTrackIndex++;
+        function playAllTracks() {
+            playTrack(currentTrackIndex);
+            audioPlayer.addEventListener('ended', () => {
+                currentTrackIndex = (currentTrackIndex + 1) % trackList.length;
                 playTrack(currentTrackIndex);
-            }
+            });
         }
 
-        function rewindTrack() {
-            if (currentTrackIndex > 0) {
-                currentTrackIndex--;
-                playTrack(currentTrackIndex);
-            }
-        }
-
-        function setVolume() {
-            audioPlayer.volume = volumeControl.value;
-        }
-
-        playAllButton.addEventListener('click', () => {
+        document.getElementById('playAllButton').addEventListener('click', playAllTracks);
+        document.getElementById('skipButton').addEventListener('click', () => {
+            currentTrackIndex = (currentTrackIndex + 1) % trackList.length;
             playTrack(currentTrackIndex);
         });
 
-        skipButton.addEventListener('click', skipTrack);
-        rewindButton.addEventListener('click', rewindTrack);
-        volumeControl.addEventListener('input', setVolume);
+        document.getElementById('rewindButton').addEventListener('click', () => {
+            currentTrackIndex = (currentTrackIndex - 1 + trackList.length) % trackList.length;
+            playTrack(currentTrackIndex);
+        });
 
         audioPlayer.addEventListener('timeupdate', updateProgressBar);
+        audioPlayer.addEventListener('loadedmetadata', updateProgressBar);
+        audioPlayer.addEventListener('ended', updateProgressBar);
+
         applyCustomization.addEventListener('click', () => {
             customArtist = artistInput.value || customArtist;
             customAlbumArt = albumArtInput.value || customAlbumArt;
+            alert('Customization applied!');
+        });
+
+        volumeControl.addEventListener('input', () => {
+            audioPlayer.volume = volumeControl.value;
         });
 
         createTrackElements();
     </script>
-
 </body>
 </html>
