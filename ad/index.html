@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Playlist</title>
+    <title>whats up</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap" rel="stylesheet">
     <style>
         body {
@@ -13,7 +13,7 @@
             margin: 0;
             padding: 20px;
             text-align: center;
-            user-select: none;
+            user-select: none;  
         }
         h1 {
             margin-bottom: 20px;
@@ -167,7 +167,7 @@
         let currentlyPlayingIndex = -1;
 
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelector('h1').textContent = 'My Playlist';
+            document.querySelector('h1').textContent = '_____ was here!';
         });
 
         function playTrack(index) {
@@ -188,22 +188,7 @@
         function updateDuration() {
             audioPlayer.onloadedmetadata = () => {
                 durationTime.textContent = formatTime(audioPlayer.duration);
-                audioPlayer.ontimeupdate = () => {
-                    currentTime.textContent = formatTime(audioPlayer.currentTime);
-                    progress.style.width = (audioPlayer.currentTime / audioPlayer.duration) * 100 + '%';
-                };
-                audioPlayer.onended = () => {
-                    nextTrack();
-                };
             };
-        }
-
-        function nextTrack() {
-            currentlyPlayingIndex++;
-            if (currentlyPlayingIndex >= trackList.length) {
-                currentlyPlayingIndex = 0; // Loop back to the first track
-            }
-            playTrack(currentlyPlayingIndex);
         }
 
         function formatTime(seconds) {
@@ -212,12 +197,24 @@
             return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
         }
 
+        function updateProgress() {
+            const progressPercent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            progress.style.width = `${progressPercent}%`;
+            currentTime.textContent = formatTime(audioPlayer.currentTime);
+        }
+
+        function updateControls(isPlaying) {
+            togglePlayButton.textContent = isPlaying ? '⏸️' : '▶️';
+        }
+
         togglePlayButton.addEventListener('click', () => {
-            if (currentlyPlayingIndex === -1) {
-                playTrack(0); // Start playing from the first track
-            } else if (audioPlayer.paused) {
-                audioPlayer.play();
-                updateControls(true);
+            if (audioPlayer.paused) {
+                if (currentlyPlayingIndex === -1) {
+                    playTrack(0);
+                } else {
+                    audioPlayer.play();
+                    updateControls(true);
+                }
             } else {
                 audioPlayer.pause();
                 updateControls(false);
@@ -225,27 +222,37 @@
         });
 
         skipBackButton.addEventListener('click', () => {
-            if (currentlyPlayingIndex > 0) {
-                currentlyPlayingIndex--;
-                playTrack(currentlyPlayingIndex);
-            }
+            currentlyPlayingIndex = (currentlyPlayingIndex - 1 + trackList.length) % trackList.length;
+            playTrack(currentlyPlayingIndex);
         });
 
         skipForwardButton.addEventListener('click', () => {
-            nextTrack();
+            currentlyPlayingIndex = (currentlyPlayingIndex + 1) % trackList.length;
+            playTrack(currentlyPlayingIndex);
         });
 
-        function updateControls(isPlaying) {
-            togglePlayButton.textContent = isPlaying ? '⏸️' : '▶️';
-        }
-
         trackList.forEach((track, index) => {
-            const li = document.createElement('li');
-            li.textContent = track.displayName;
-            li.addEventListener('click', () => {
+            const trackItem = document.createElement('li');
+            trackItem.textContent = track.displayName;
+            trackItem.addEventListener('click', () => {
                 playTrack(index);
             });
-            trackListElement.appendChild(li);
+            trackListElement.appendChild(trackItem);
+        });
+
+        audioPlayer.addEventListener('timeupdate', updateProgress);
+        audioPlayer.addEventListener('ended', () => {
+            currentlyPlayingIndex = (currentlyPlayingIndex + 1) % trackList.length;
+            playTrack(currentlyPlayingIndex);
+        });
+
+        progressContainer.addEventListener('click', (e) => {
+            const rect = progressContainer.getBoundingClientRect();
+            const offsetX = e.clientX - rect.left;
+            const totalWidth = rect.width;
+            const clickPosition = offsetX / totalWidth;
+            audioPlayer.currentTime = clickPosition * audioPlayer.duration;
+            updateProgress();
         });
     </script>
 </body>
