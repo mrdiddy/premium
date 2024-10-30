@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>whats up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            user-select: none;  
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+        #trackList {
+            list-style: none;
+            padding: 0;
+            margin: 20px auto;
+            width: 80%;
+        }
+        #trackList li {
+            padding: 15px;
+            background: #1e1e1e;
+            margin: 5px 0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        #trackList li:hover {
+            background: #61dafb;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        .control-button {
+            background-color: #444;
+            border: none;
+            border-radius: 50%;
+            color: #ffffff;
+            padding: 15px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background 0.3s, transform 0.3s;
+            width: 60px;
+            height: 60px;
+        }
+        .control-button:hover {
+            background-color: #61dafb;
+            transform: scale(1.1);
+        }
+        .control-button:active {
+            transform: scale(0.95);
+        }
+        .progress-container {
+            width: 80%;
+            margin: 10px auto;
+            background: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .progress {
+            height: 10px;
+            background: #61dafb;
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.1s, height 0.2s;
+        }
+        .progress-container:hover {
+            background: #444;
+        }
+        .progress-container:hover .progress {
+            height: 12px;
+        }
+        .time {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        * {
+            transition: all 0.1s ease;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="nowPlaying">Die With A Smile</h1>
+    <div class="controls">
+        <button id="skipBackButton" class="control-button">⏮️</button>
+        <button id="togglePlayButton" class="control-button">▶️</button>
+        <button id="skipForwardButton" class="control-button">⏭️</button>
+    </div>
+    <div class="progress-container" id="progressContainer">
+        <div class="progress" id="progress"></div>
+    </div>
+    <div class="time">
+        <span id="currentTime">0:00</span> / <span id="durationTime">0:00</span>
+    </div>
+    <h3>Track List</h3>
+    <ul id="trackList"></ul>
+
+    <script>
+        const audioPlayer = new Audio();
+        const trackListElement = document.getElementById('trackList');
+        const togglePlayButton = document.getElementById('togglePlayButton');
+        const skipBackButton = document.getElementById('skipBackButton');
+        const skipForwardButton = document.getElementById('skipForwardButton');
+        const progress = document.getElementById('progress');
+        const currentTime = document.getElementById('currentTime');
+        const durationTime = document.getElementById('durationTime');
+        const progressContainer = document.getElementById('progressContainer');
+
+        const trackList = [
+            { file: 'DieWithASmile.mp3', displayName: 'Die With A Frown', duration: 200 },
+            { file: 'Lover.mp3', displayName: 'Hater', duration: 240 },
+            { file: 'Cardigan.mp3', displayName: 'stay in place', duration: 200 },
+            { file: 'CruelSummer.mp3', displayName: 'Kind Summer', duration: 215 },
+            { file: 'BIRDSOFAFEATHER.mp3', displayName: 'Birds of a Mouse', duration: 180 },
+            { file: 'SailorSong.mp3', displayName: 'Beater Song', duration: 190 },
+            { file: 'her.mp3', displayName: 'Him', duration: 210 },
+            { file: 'GlueSong.mp3', displayName: 'Nut Song', duration: 220 },
+            { file: 'CryingSeason.mp3', displayName: 'Laughing Season', duration: 230 },
+            { file: 'MoonlitFloor.mp3', displayName: 'Sunlit Floor', duration: 240 },
+            { file: 'bloodline.mp3', displayName: 'deathline', duration: 250 },
+            { file: 'RealMan.mp3', displayName: 'Real Woman', duration: 260 },
+            { file: 'TakeMeHome.mp3', displayName: 'Take Me', duration: 270 },
+            { file: 'Nonsense.mp3', displayName: 'Sense', duration: 280 },
+            { file: 'Espresso.mp3', displayName: 'Cappuccino', duration: 290 },
+            { file: 'BedChem.mp3', displayName: 'Chair Chem', duration: 300 },
+            { file: 'PleasePleasePlease.mp3', displayName: 'Displease, Displease, Displease', duration: 310 },
+            { file: 'AREWESTILLFRIENDS.mp3', displayName: 'NO WE ARE NOT STILL FRIENDS', duration: 320 },
+            { file: 'AgainAndAgain.mp3', displayName: 'Over and Over', duration: 330 },
+            { file: 'SeeYouAgain.mp3', displayName: 'See You Once', duration: 340 },
+            { file: 'NoticedILaughed.mp3', displayName: 'Noticed I Cried', duration: 350 },
+            { file: 'Everyday.mp3', displayName: 'Everynight', duration: 360 },
+            { file: 'APT.mp3', displayName: 'APT', duration: 370 },
+            { file: 'CarryMeOut.mp3', displayName: 'Carry Me In', duration: 380 },
+            { file: 'DrunkWalkHome.mp3', displayName: 'Sobber Walk Home', duration: 390 },
+            { file: 'FrancisForever.mp3', displayName: 'Iris Forever', duration: 400 },
+            { file: 'IDontSmoke.mp3', displayName: "I Smoke", duration: 410 },
+            { file: 'IWill.mp3', displayName: 'I Will Touch you', duration: 420 },
+            { file: 'JoblessMonday.mp3', displayName: 'Jobless Sunday', duration: 430 },
+            { file: 'LastWordsofaShootingStar.mp3', displayName: 'Last Stomp of a Shooting Star', duration: 440 },
+            { file: 'LateSpring.mp3', displayName: 'Early Spring', duration: 450 },
+            { file: 'TexasReznikoff.mp3', displayName: 'Texas Trochee', duration: 460 },
+            { file: 'Townie.mp3', displayName: 'Emigrant', duration: 470 },
+            { file: 'theboyismine.mp3', displayName: 'The Girl is Mine', duration: 480 },
+            { file: 'YouBelongWithMe.mp3', displayName: 'You Belong Do Not belong With me', duration: 490 },
+            { file: 'ANightToRemember.mp3', displayName: 'A Day to Remember', duration: 500 },
+            { file: 'YoureHereThatsTheThing.mp3', displayName: 'You’re Not Here, That’s The Thing', duration: 510 },
+            { file: 'theperfectpair.mp3', displayName: 'The Imperfect Pair', duration: 520 }
+        ];
+
+        let currentlyPlayingIndex = -1;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            playTrack(0); // Automatically play the first song on page load
+        });
+
+        function playTrack(index) {
+            currentlyPlayingIndex = index;
+            const filePath = `../songs/${trackList[index].file}`;
+            console.log('Attempting to play:', filePath);
+            
+            audioPlayer.src = filePath;
+            audioPlayer.play().then(() => {
+                updateMediaMetadata(trackList[index].displayName, 'master got me working on the feilds');
+                updateControls(true);
+            }).catch(error => {
+                console.error('Error playing track:', error);
+            });
+
+            updateDuration(trackList[index].duration);
+        }
+
+        function updateMediaMetadata(title, artist) {
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: title,
+                    artist: artist,
+                    album: 'Music',
+                    artwork: [
+                        { src: 'https://static.boredpanda.com/blog/wp-content/uploads/2021/04/Funny-baby-pictures-6077486a4d1d9__700.jpg', width: 640, height: 640 },
+                    ]
+                });
+            }
+        }
+
+        audioPlayer.addEventListener('ended', () => {
+            currentlyPlayingIndex = (currentlyPlayingIndex + 1) % trackList.length;
+            playTrack(currentlyPlayingIndex);
+        });
+
+        togglePlayButton.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                updateMediaMetadata(trackList[currentlyPlayingIndex].displayName, 'beababoobies, Lady Gago, Bruno Saturn, Methski, IShowMeat, Tyler the Farmer, Beyonce, Diddy, Drake, Duolingo');
+                updateControls(true);
+            } else {
+                audioPlayer.pause();
+                updateControls(false);
+            }
+        });
+
+        skipBackButton.addEventListener('click', () => {
+            currentlyPlayingIndex = (currentlyPlayingIndex - 1 + trackList.length) % trackList.length;
+            playTrack(currentlyPlayingIndex);
+        });
+
+        skipForwardButton.addEventListener('click', () => {
+            currentlyPlayingIndex = (currentlyPlayingIndex + 1) % trackList.length;
+            playTrack(currentlyPlayingIndex);
+        });
+
+        audioPlayer.addEventListener('timeupdate', () => {
+            const currentTimeValue = Math.floor(audioPlayer.currentTime);
+            const durationValue = Math.floor(audioPlayer.duration);
+            currentTime.textContent = formatTime(currentTimeValue);
+            durationTime.textContent = formatTime(durationValue);
+            const progressPercentage = (currentTimeValue / durationValue) * 100;
+            progress.style.width = progressPercentage + '%';
+        });
+
+        progressContainer.addEventListener('click', (event) => {
+            const rect = progressContainer.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const percentage = clickX / progressContainer.offsetWidth;
+            audioPlayer.currentTime = percentage * audioPlayer.duration;
+        });
+
+        function updateControls(isPlaying) {
+            togglePlayButton.textContent = isPlaying ? '⏸️' : '▶️';
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+
+        function updateDuration(duration) {
+            durationTime.textContent = formatTime(duration);
+        }
+
+        // Populate track list on page load
+        trackList.forEach((track, index) => {
+            const li = document.createElement('li');
+            li.textContent = track.displayName;
+            li.addEventListener('click', () => {
+                playTrack(index);
+            });
+            trackListElement.appendChild(li);
+        });
+    </script>
+</body>
+</html>
