@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>whats up</title>
+    <title>My Playlist</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap" rel="stylesheet">
     <style>
         body {
@@ -111,9 +111,50 @@
     </div>
     <h3>Track List</h3>
     <ul id="trackList"></ul>
-
+    <audio id="audioPlayer" preload="metadata"></audio>
     <script>
-        const audioPlayer = new Audio();
+        const trackList = [
+            { file: 'DieWithASmile.mp3', displayName: 'Die With A Smile', artist: 'Shian' },
+            { file: 'Lover.mp3', displayName: 'Lover', artist: 'Shian' },
+            { file: 'Cardigan.mp3', displayName: 'Cardigan', artist: 'Shian' },
+            { file: 'CruelSummer.mp3', displayName: 'Cruel Summer', artist: 'Shian' },
+            { file: 'BIRDSOFAFEATHER.mp3', displayName: 'Birds of a Feather', artist: 'Shian' },
+            { file: 'SailorSong.mp3', displayName: 'Sailor Song', artist: 'Shian' },
+            { file: 'her.mp3', displayName: 'Sailo- I mean her!', artist: 'Shian' },
+            { file: 'GlueSong.mp3', displayName: 'Glue Song', artist: 'Shian' },
+            { file: 'CryingSeason.mp3', displayName: 'Crying Season', artist: 'Shian' },
+            { file: 'MoonlitFloor.mp3', displayName: 'Moonlit Floor', artist: 'Shian' },
+            { file: 'bloodline.mp3', displayName: 'bloodline', artist: 'Shian' },
+            { file: 'RealMan.mp3', displayName: 'Real Man', artist: 'Shian' },
+            { file: 'TakeMeHome.mp3', displayName: 'Take Me Home', artist: 'Shian' },
+            { file: 'Nonsense.mp3', displayName: 'Nonsense', artist: 'Shian' },
+            { file: 'Espresso.mp3', displayName: 'Espresso', artist: 'Shian' },
+            { file: 'BedChem.mp3', displayName: 'Bed Chem', artist: 'Shian' },
+            { file: 'PleasePleasePlease.mp3', displayName: 'Please, Please, Please', artist: 'Shian' },
+            { file: 'AREWESTILLFRIENDS.mp3', displayName: 'ARE WE STILL FRIENDS?', artist: 'Shian' },
+            { file: 'AgainAndAgain.mp3', displayName: 'Again and Again', artist: 'Shian' },
+            { file: 'SeeYouAgain.mp3', displayName: 'See You Again', artist: 'Shian' },
+            { file: 'NoticedILaughed.mp3', displayName: 'Noticed I Laughed', artist: 'Shian' },
+            { file: 'Everyday.mp3', displayName: 'Everyday', artist: 'Shian' },
+            { file: 'APT.mp3', displayName: 'APT', artist: 'Shian' },
+            { file: 'CarryMeOut.mp3', displayName: 'Carry Me Out', artist: 'Shian' },
+            { file: 'DrunkWalkHome.mp3', displayName: 'Drunk Walk Home', artist: 'Shian' },
+            { file: 'FrancisForever.mp3', displayName: 'Francis Forever', artist: 'Shian' },
+            { file: 'IDontSmoke.mp3', displayName: "I Don't Smoke", artist: 'Shian' },
+            { file: 'IWill.mp3', displayName: 'I Will', artist: 'Shian' },
+            { file: 'JoblessMonday.mp3', displayName: 'Jobless Monday', artist: 'Shian' },
+            { file: 'LastWordsofaShootingStar.mp3', displayName: 'Last Words of a Shooting Star', artist: 'Shian' },
+            { file: 'LateSpring.mp3', displayName: 'Late Spring', artist: 'Shian' },
+            { file: 'TexasReznikoff.mp3', displayName: 'Texas Reznikoff', artist: 'Shian' },
+            { file: 'Townie.mp3', displayName: 'Townie', artist: 'Shian' },
+            { file: 'theboyismine.mp3', displayName: 'The Boy is Mine', artist: 'Shian' },
+            { file: 'YouBelongWithMe.mp3', displayName: 'You Belong With Me', artist: 'Shian' },
+            { file: 'ANightToRemember.mp3', displayName: 'A Night to Remember', artist: 'Shian' },
+            { file: 'YoureHereThatsTheThing.mp3', displayName: 'You’re Here, That’s The Thing', artist: 'Shian' },
+            { file: 'theperfectpair.mp3', displayName: 'The Perfect Pair', artist: 'Shian' }
+        ];
+
+        const audioPlayer = document.getElementById('audioPlayer');
         const trackListElement = document.getElementById('trackList');
         const togglePlayButton = document.getElementById('togglePlayButton');
         const skipBackButton = document.getElementById('skipBackButton');
@@ -122,52 +163,79 @@
         const currentTime = document.getElementById('currentTime');
         const durationTime = document.getElementById('durationTime');
         const progressContainer = document.getElementById('progressContainer');
-
-        const trackList = [
-            { file: 'DieWithASmile.mp3', displayName: 'Die With A Smile', duration: 200 },
-            { file: 'Lover.mp3', displayName: 'Lover', duration: 240 },
-            { file: 'Cardigan.mp3', displayName: 'Cardigan', duration: 200 },
-            { file: 'CruelSummer.mp3', displayName: 'Cruel Summer', duration: 215 },
-            { file: 'BIRDSOFAFEATHER.mp3', displayName: 'Birds of a Feather', duration: 180 },
-            { file: 'SailorSong.mp3', displayName: 'Sailor Song', duration: 190 },
-            { file: 'her.mp3', displayName: 'Sailo- I mean her!', duration: 210 },
-            { file: 'GlueSong.mp3', displayName: 'Glue Song', duration: 220 },
-            { file: 'CryingSeason.mp3', displayName: 'Crying Season', duration: 230 },
-            { file: 'MoonlitFloor.mp3', displayName: 'Moonlit Floor', duration: 240 },
-            { file: 'bloodline.mp3', displayName: 'bloodline', duration: 250 },
-            { file: 'RealMan.mp3', displayName: 'Real Man', duration: 260 },
-            { file: 'TakeMeHome.mp3', displayName: 'Take Me Home', duration: 270 },
-            { file: 'Nonsense.mp3', displayName: 'Nonsense', duration: 280 },
-            { file: 'Espresso.mp3', displayName: 'Espresso', duration: 290 },
-            { file: 'BedChem.mp3', displayName: 'Bed Chem', duration: 300 },
-            { file: 'PleasePleasePlease.mp3', displayName: 'Please, Please, Please', duration: 310 },
-            { file: 'AREWESTILLFRIENDS.mp3', displayName: 'ARE WE STILL FRIENDS?', duration: 320 },
-            { file: 'AgainAndAgain.mp3', displayName: 'Again and Again', duration: 330 },
-            { file: 'SeeYouAgain.mp3', displayName: 'See You Again', duration: 340 },
-            { file: 'NoticedILaughed.mp3', displayName: 'Noticed I Laughed', duration: 350 },
-            { file: 'Everyday.mp3', displayName: 'Everyday', duration: 360 },
-            { file: 'APT.mp3', displayName: 'APT', duration: 370 },
-            { file: 'CarryMeOut.mp3', displayName: 'Carry Me Out', duration: 380 },
-            { file: 'DrunkWalkHome.mp3', displayName: 'Drunk Walk Home', duration: 390 },
-            { file: 'FrancisForever.mp3', displayName: 'Francis Forever', duration: 400 },
-            { file: 'IDontSmoke.mp3', displayName: "I Don't Smoke", duration: 410 },
-            { file: 'IWill.mp3', displayName: 'I Will', duration: 420 },
-            { file: 'JoblessMonday.mp3', displayName: 'Jobless Monday', duration: 430 },
-            { file: 'LastWordsofaShootingStar.mp3', displayName: 'Last Words of a Shooting Star', duration: 440 },
-            { file: 'LateSpring.mp3', displayName: 'Late Spring', duration: 450 },
-            { file: 'TexasReznikoff.mp3', displayName: 'Texas Reznikoff', duration: 460 },
-            { file: 'Townie.mp3', displayName: 'Townie', duration: 470 },
-            { file: 'theboyismine.mp3', displayName: 'The Boy is Mine', duration: 480 },
-            { file: 'YouBelongWithMe.mp3', displayName: 'You Belong With Me', duration: 490 },
-            { file: 'ANightToRemember.mp3', displayName: 'A Night to Remember', duration: 500 },
-            { file: 'YoureHereThatsTheThing.mp3', displayName: 'You’re Here, That’s The Thing', duration: 510 },
-            { file: 'theperfectpair.mp3', displayName: 'The Perfect Pair', duration: 520 }
-        ];
-
         let currentlyPlayingIndex = -1;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelector('h1').textContent = '_____ was here!';
+        function updateTrackList() {
+            trackList.forEach((track, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${track.displayName} - ${track.artist}`;
+                li.addEventListener('click', () => playTrack(index));
+                trackListElement.appendChild(li);
+            });
+        }
+
+        function updateControls(isPlaying) {
+            togglePlayButton.textContent = isPlaying ? '⏸️' : '▶️';
+        }
+
+        function updateProgress() {
+            const progressPercentage = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            progress.style.width = `${progressPercentage}%`;
+            currentTime.textContent = formatTime(audioPlayer.currentTime);
+            durationTime.textContent = formatTime(audioPlayer.duration);
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = Math.floor(seconds % 60);
+            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+
+        function updateDuration() {
+            audioPlayer.onloadedmetadata = () => {
+                durationTime.textContent = formatTime(audioPlayer.duration);
+            };
+        }
+
+        audioPlayer.addEventListener('timeupdate', updateProgress);
+        audioPlayer.addEventListener('ended', () => {
+            if (currentlyPlayingIndex < trackList.length - 1) {
+                playTrack(currentlyPlayingIndex + 1);
+            } else {
+                currentlyPlayingIndex = -1;
+                updateControls(false);
+                progress.style.width = '0%';
+                currentTime.textContent = '0:00';
+            }
+        });
+
+        togglePlayButton.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                updateControls(true);
+            } else {
+                audioPlayer.pause();
+                updateControls(false);
+            }
+        });
+
+        skipBackButton.addEventListener('click', () => {
+            if (currentlyPlayingIndex > 0) {
+                playTrack(currentlyPlayingIndex - 1);
+            }
+        });
+
+        skipForwardButton.addEventListener('click', () => {
+            if (currentlyPlayingIndex < trackList.length - 1) {
+                playTrack(currentlyPlayingIndex + 1);
+            }
+        });
+
+        progressContainer.addEventListener('click', (e) => {
+            const rect = progressContainer.getBoundingClientRect();
+            const clickPosition = e.clientX - rect.left;
+            const progressPercentage = clickPosition / progressContainer.offsetWidth;
+            audioPlayer.currentTime = progressPercentage * audioPlayer.duration;
         });
 
         function playTrack(index) {
@@ -178,6 +246,7 @@
             audioPlayer.src = filePath;
             audioPlayer.play().then(() => {
                 updateControls(true);
+                document.title = `${trackList[index].displayName} - Shian`; // Update the title with artist name
             }).catch(error => {
                 console.error('Error playing the audio:', error);
             });
@@ -185,75 +254,7 @@
             updateDuration();
         }
 
-        function updateDuration() {
-            audioPlayer.onloadedmetadata = () => {
-                durationTime.textContent = formatTime(audioPlayer.duration);
-            };
-        }
-
-        function formatTime(seconds) {
-            const minutes = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
-        }
-
-        function updateProgress() {
-            const progressPercent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-            progress.style.width = `${progressPercent}%`;
-            currentTime.textContent = formatTime(audioPlayer.currentTime);
-        }
-
-        function updateControls(isPlaying) {
-            togglePlayButton.textContent = isPlaying ? '⏸️' : '▶️';
-        }
-
-        togglePlayButton.addEventListener('click', () => {
-            if (audioPlayer.paused) {
-                if (currentlyPlayingIndex === -1) {
-                    playTrack(0);
-                } else {
-                    audioPlayer.play();
-                    updateControls(true);
-                }
-            } else {
-                audioPlayer.pause();
-                updateControls(false);
-            }
-        });
-
-        skipBackButton.addEventListener('click', () => {
-            currentlyPlayingIndex = (currentlyPlayingIndex - 1 + trackList.length) % trackList.length;
-            playTrack(currentlyPlayingIndex);
-        });
-
-        skipForwardButton.addEventListener('click', () => {
-            currentlyPlayingIndex = (currentlyPlayingIndex + 1) % trackList.length;
-            playTrack(currentlyPlayingIndex);
-        });
-
-        trackList.forEach((track, index) => {
-            const trackItem = document.createElement('li');
-            trackItem.textContent = track.displayName;
-            trackItem.addEventListener('click', () => {
-                playTrack(index);
-            });
-            trackListElement.appendChild(trackItem);
-        });
-
-        audioPlayer.addEventListener('timeupdate', updateProgress);
-        audioPlayer.addEventListener('ended', () => {
-            currentlyPlayingIndex = (currentlyPlayingIndex + 1) % trackList.length;
-            playTrack(currentlyPlayingIndex);
-        });
-
-        progressContainer.addEventListener('click', (e) => {
-            const rect = progressContainer.getBoundingClientRect();
-            const offsetX = e.clientX - rect.left;
-            const totalWidth = rect.width;
-            const clickPosition = offsetX / totalWidth;
-            audioPlayer.currentTime = clickPosition * audioPlayer.duration;
-            updateProgress();
-        });
+        updateTrackList();
     </script>
 </body>
 </html>
