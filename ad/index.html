@@ -97,7 +97,7 @@
     </style>
 </head>
 <body>
-    <h1>My Playlist</h1>
+    <h1 id="nowPlaying">Die With A Smile</h1>
     <div class="controls">
         <button id="skipBackButton" class="control-button">⏮️</button>
         <button id="togglePlayButton" class="control-button">▶️</button>
@@ -167,13 +167,7 @@
         let currentlyPlayingIndex = -1;
 
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelector('h1').textContent = '_____ was here!';
-            trackList.forEach((track, index) => {
-                const li = document.createElement('li');
-                li.textContent = track.displayName;
-                li.addEventListener('click', () => playTrack(index));
-                trackListElement.appendChild(li);
-            });
+            playTrack(0); // Automatically play the first song on page load
         });
 
         function playTrack(index) {
@@ -183,57 +177,37 @@
             
             audioPlayer.src = filePath;
             audioPlayer.play().then(() => {
+                updateMediaMetadata(trackList[index].displayName, 'By: Shian');
                 updateControls(true);
-                updateMediaMetadata(trackList[index].displayName, 'Shian');
             }).catch(error => {
-                console.error('Error playing the audio:', error);
+                console.error('Error playing track:', error);
             });
 
-            updateDuration();
+            updateDuration(trackList[index].duration);
         }
 
-        function updateMediaMetadata(displayName, artist) {
-            if (navigator.mediaSession) {
+        function updateMediaMetadata(title, artist) {
+            if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
-                    title: displayName,
+                    title: title,
                     artist: artist,
-                    album: 'My Playlist',
+                    album: 'Music',
                     artwork: [
-                        { src: 'cover.jpg', sizes: '96x96', type: 'image/jpeg' },
-                        { src: 'cover.jpg', sizes: '128x128', type: 'image/jpeg' },
-                        { src: 'cover.jpg', sizes: '192x192', type: 'image/jpeg' },
-                        { src: 'cover.jpg', sizes: '256x256', type: 'image/jpeg' },
-                        { src: 'cover.jpg', sizes: '384x384', type: 'image/jpeg' },
-                        { src: 'cover.jpg', sizes: '512x512', type: 'image/jpeg' },
+                        { src: 'https://scontent.fmnl9-2.fna.fbcdn.net/v/t39.30808-6/372855958_269524975967773_8822258915233451080_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeEtclnfceU4TA_AHZ2J_TZcZWl9qbVqsPZlaX2ptWqw9tWij-mbEVz_TdY4x2bV1unXFUbr1v8NTTp62_Mja-di&_nc_ohc=4qe6Mg4uloMQ7kNvgH-l-kb&_nc_zt=23&_nc_ht=scontent.fmnl9-2.fna&_nc_gid=Ar8lgPsIJNVxMihgCk8tIPZ&oh=00_AYCVZgWRanKuLgR_e0AR14DouXtEW1U13oAberA9CY4X-Q&oe=67278DDC', width: 640, height: 640 },
                     ]
                 });
-                navigator.mediaSession.playbackState = 'playing';
             }
         }
 
-        function updateDuration() {
-            audioPlayer.addEventListener('loadedmetadata', () => {
-                durationTime.textContent = formatTime(audioPlayer.duration);
-            });
-        }
-
-        function updateControls(isPlaying) {
-            togglePlayButton.textContent = isPlaying ? '⏸️' : '▶️';
-            audioPlayer.ontimeupdate = () => {
-                currentTime.textContent = formatTime(audioPlayer.currentTime);
-                progress.style.width = (audioPlayer.currentTime / audioPlayer.duration) * 100 + '%';
-            };
-        }
-
-        function formatTime(seconds) {
-            const minutes = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
-        }
+        audioPlayer.addEventListener('ended', () => {
+            currentlyPlayingIndex = (currentlyPlayingIndex + 1) % trackList.length;
+            playTrack(currentlyPlayingIndex);
+        });
 
         togglePlayButton.addEventListener('click', () => {
             if (audioPlayer.paused) {
                 audioPlayer.play();
+                updateMediaMetadata(trackList[currentlyPlayingIndex].displayName, 'By: Shian');
                 updateControls(true);
             } else {
                 audioPlayer.pause();
@@ -242,31 +216,53 @@
         });
 
         skipBackButton.addEventListener('click', () => {
-            if (currentlyPlayingIndex > 0) {
-                playTrack(currentlyPlayingIndex - 1);
-            }
+            currentlyPlayingIndex = (currentlyPlayingIndex - 1 + trackList.length) % trackList.length;
+            playTrack(currentlyPlayingIndex);
         });
 
         skipForwardButton.addEventListener('click', () => {
-            if (currentlyPlayingIndex < trackList.length - 1) {
-                playTrack(currentlyPlayingIndex + 1);
-            }
+            currentlyPlayingIndex = (currentlyPlayingIndex + 1) % trackList.length;
+            playTrack(currentlyPlayingIndex);
+        });
+
+        audioPlayer.addEventListener('timeupdate', () => {
+            const currentTimeValue = Math.floor(audioPlayer.currentTime);
+            const durationValue = Math.floor(audioPlayer.duration);
+            currentTime.textContent = formatTime(currentTimeValue);
+            durationTime.textContent = formatTime(durationValue);
+            const progressPercentage = (currentTimeValue / durationValue) * 100;
+            progress.style.width = progressPercentage + '%';
         });
 
         progressContainer.addEventListener('click', (event) => {
             const rect = progressContainer.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const width = rect.width;
-            const percentage = x / width;
+            const clickX = event.clientX - rect.left;
+            const percentage = clickX / progressContainer.offsetWidth;
             audioPlayer.currentTime = percentage * audioPlayer.duration;
         });
 
-        audioPlayer.addEventListener('ended', () => {
-            if (currentlyPlayingIndex < trackList.length - 1) {
-                playTrack(currentlyPlayingIndex + 1);
-            } else {
-                updateControls(false);
-            }
+        function updateControls(isPlaying) {
+            togglePlayButton.textContent = isPlaying ? '⏸️' : '▶️';
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+
+        function updateDuration(duration) {
+            durationTime.textContent = formatTime(duration);
+        }
+
+        // Populate track list on page load
+        trackList.forEach((track, index) => {
+            const li = document.createElement('li');
+            li.textContent = track.displayName;
+            li.addEventListener('click', () => {
+                playTrack(index);
+            });
+            trackListElement.appendChild(li);
         });
     </script>
 </body>
