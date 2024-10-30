@@ -177,7 +177,7 @@
             
             audioPlayer.src = filePath;
             audioPlayer.play().then(() => {
-                updateMediaMetadata(trackList[index].displayName, 'By: Shian');
+                updateMediaMetadata(trackList[index].displayName, 'beababoobies, Lady Gago, Bruno Saturn, Methski, IShowMeat, Tyler the Farmer, Beyonce, Diddy, Drake, Duolingo');
                 updateControls(true);
             }).catch(error => {
                 console.error('Error playing track:', error);
@@ -207,7 +207,7 @@
         togglePlayButton.addEventListener('click', () => {
             if (audioPlayer.paused) {
                 audioPlayer.play();
-                updateMediaMetadata(trackList[currentlyPlayingIndex].displayName, 'beababoobies, lady gago, bruno saturn, methski, skibidi, nigga, skibidi toilet, youtube, duolingo');
+                updateMediaMetadata(trackList[currentlyPlayingIndex].displayName, 'beababoobies, Lady Gago, Bruno Saturn, Methski, IShowMeat, Tyler the Farmer, Beyonce, Diddy, Drake, Duolingo');
                 updateControls(true);
             } else {
                 audioPlayer.pause();
